@@ -1,0 +1,45 @@
+name: RoleTest
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on:  ubuntu-latest
+    container:
+      image: waltonseymour/rdkit-numpy:3.7
+    services:
+      postgres:
+        image: postgres:latest 
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: install node for local test without action.js
+        run: apt-get update && apt-get install -y nodejs
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Set up Go 1.x
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.15
+        id: go
+      - name: Get dependencies
+        run: |
+          go mod download
+      - name: Build
+        run: go build -v ./...
+      - name: Role Test
+        run: go test -v --race
