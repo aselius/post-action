@@ -14,7 +14,8 @@ import (
 )
 
 func setupTestDB() (*gorm.DB) {
-	var dbConnInfo = fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+	var dbConnInfo = fmt.Sprintf("host=%s port=%d user=%s "+
+	"password=%s dbname=%s sslmode=disable",
 	"localhost", 5432, "postgres", "postgres", "postgres")
 
 	gormDB, err := gorm.Open("postgres", dbConnInfo)
